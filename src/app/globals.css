@@ -1,27 +1,806 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --dark-purple: #2C0D2A;
+  --blue: #6172C5;
+  --pink: #ED2EA5;
+  --orange: #FA8057;
+  --yellow: #FAD009;
+  --white: #FFFFFF;
+  --black: #000000;
+  --dark-gray: #1A1A1A;
+  --light-gray: #CCCCCC;
+
+  --background: var(--dark-purple);
+  --foreground: var(--white);
+  --primary: var(--pink);
+  --secondary: var(--blue);
+  --accent: var(--yellow);
+  --highlight: var(--orange);
+
+  /* Font variables will be set by next/font */
+  --font-body: var(--font-inter), 'Inter', sans-serif;
+  --font-heading: var(--font-orbitron), 'Orbitron', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
+  font-family: var(--font-body);
+  background-color: var(--background);
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.gradient-text {
+  background: linear-gradient(to right, var(--yellow), var(--orange), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.button {
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  transition: width 0.6s, height 0.6s;
+}
+
+.button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.button-secondary {
+  background-color: var(--secondary);
+}
+
+.button-accent {
+  background-color: var(--accent);
+  color: var(--dark-purple);
+}
+
+.input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(237, 46, 165, 0.2);
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Grid and layout utilities */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (min-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Synthwave-inspired background */
+.synthwave-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: radial-gradient(ellipse at bottom, var(--dark-purple) 0%, #000 100%);
+  overflow: hidden;
+}
+
+.synthwave-bg:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200vw;
+  height: 200vh;
+  background: linear-gradient(0deg, transparent 0%, transparent 95%, var(--blue) 100%);
+  background-size: 10px 10px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  opacity: 0.15;
+}
+
+.synthwave-bg:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 35%;
+  background: linear-gradient(0deg, var(--primary) 0%, transparent 100%);
+  opacity: 0.05;
+  z-index: -1;
+}
+
+/* Keyframes for animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(237, 46, 165, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(237, 46, 165, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(237, 46, 165, 0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 10px rgba(237, 46, 165, 0.5),
+      0 0 20px rgba(237, 46, 165, 0.3);
+  }
+
+  50% {
+    text-shadow: 0 0 20px rgba(237, 46, 165, 0.8),
+      0 0 30px rgba(237, 46, 165, 0.5);
+  }
+
+  100% {
+    text-shadow: 0 0 10px rgba(237, 46, 165, 0.5),
+      0 0 20px rgba(237, 46, 165, 0.3);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Apply animations to elements */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-blink {
+  animation: blink 1.5s linear infinite;
+}
+
+/* Staggered animations for lists */
+.stagger-animation>*:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.stagger-animation>*:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stagger-animation>*:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.stagger-animation>*:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.stagger-animation>*:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.stagger-animation>*:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+/* Task animations */
+.task-enter {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.task-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.task-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.task-exit-active {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Scanline effect */
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: linear-gradient(to bottom,
+      transparent,
+      rgba(237, 46, 165, 0.2),
+      transparent);
+  opacity: 0.7;
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+}
+
+/* Task item animations */
+.task-item-hover {
+  transition: all 0.3s ease;
+}
+
+.task-item-hover:hover {
+  transform: translateX(5px);
+  box-shadow: 0 0 15px rgba(237, 46, 165, 0.3);
+}
+
+/* Gradient border effect */
+.gradient-border {
+  position: relative;
+  border-radius: 8px;
+  z-index: 0;
+  padding: 1px;
+  background: linear-gradient(45deg, var(--yellow), var(--orange), var(--pink), var(--blue));
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 1px;
+  background: var(--background);
+  border-radius: 7px;
+}
+/* Add these arcade-themed CSS styles to the end of your globals.css file */
+
+/* Scanlines effect for CRT screens */
+.bg-scanlines {
+  background-image: linear-gradient(to bottom,
+      transparent 50%,
+      rgba(0, 0, 0, 0.3) 50%);
+  background-size: 100% 4px;
+}
+
+/* Arcade text styles */
+.pixel-text {
+  font-family: var(--font-orbitron);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 5px currentColor, 0 0 10px rgba(255, 255, 255, 0.3);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.retro-text {
+  font-family: var(--font-inter);
+  letter-spacing: 0.05em;
+}
+
+/* Arcade UI elements */
+.arcade-logo {
+  filter: drop-shadow(0 0 10px rgba(237, 46, 165, 0.5));
+}
+
+.arcade-button {
+  box-shadow: 0 0 5px currentColor;
+  text-shadow: 0 0 5px currentColor;
+  text-transform: uppercase;
+  font-family: var(--font-orbitron);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.arcade-screen {
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(237, 46, 165, 0.3);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.arcade-display {
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Keyboard styles for controls section */
+.key-cap {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-weight: bold;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Blink animation for arcade elements */
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.blink {
+  animation: blink 1s steps(1) infinite;
+}
+
+/* Score display blinking effect */
+.score-blink {
+  animation: score-blink 0.2s steps(2) infinite;
+}
+
+@keyframes score-blink {
+  0% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Add this to your style jsx block in the About page */
+
+.character-sprite {
+  position: relative;
+  width: 16px;
+  height: 24px;
+  transform: scale(4);
+  image-rendering: pixelated;
+}
+
+/* Base character parts based on your photo */
+.character-head {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  width: 8px;
+  height: 7px;
+  background-color: #EEEEEE;
+  border-radius: 40%;
+}
+
+.character-hair {
+  position: absolute;
+  top: 0;
+  left: 3px;
+  width: 10px;
+  height: 3px;
+  background-color: #222222;
+  border-radius: 3px 3px 0 0;
+}
+
+.character-body {
+  position: absolute;
+  top: 7px;
+  left: 3px;
+  width: 10px;
+  height: 8px;
+  background-color: #FFFFFF;
+  /* White t-shirt */
+}
+
+.character-legs {
+  position: absolute;
+  top: 15px;
+  left: 3px;
+  width: 10px;
+  height: 8px;
+  background-color: #3D3D3D;
+  /* Dark shorts */
+}
+
+.character-shadow {
+  position: absolute;
+  bottom: -2px;
+  left: 2px;
+  width: 12px;
+  height: 2px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
+
+/* Sunglasses */
+.character-head:after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 1px;
+  width: 6px;
+  height: 2px;
+  background-color: #000000;
+}
+
+/* Walking animation frames */
+/* Frame 0 & 2 - Standing */
+.sprite-frame-0 .character-legs:before,
+.sprite-frame-2 .character-legs:before {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 1px;
+  width: 3px;
+  height: 4px;
+  background-color: #222222;
+  /* Shoes */
+}
+
+.sprite-frame-0 .character-legs:after,
+.sprite-frame-2 .character-legs:after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  right: 1px;
+  width: 3px;
+  height: 4px;
+  background-color: #222222;
+  /* Shoes */
+}
+
+/* Frame 1 - Left foot forward */
+.sprite-frame-1 .character-legs:before {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0px;
+  width: 3px;
+  height: 4px;
+  background-color: #222222;
+  transform: translateX(-1px);
+}
+
+.sprite-frame-1 .character-legs:after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  right: 1px;
+  width: 3px;
+  height: 4px;
+  background-color: #222222;
+}
+
+/* Frame 3 - Right foot forward */
+.sprite-frame-3 .character-legs:before {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 1px;
+  width: 3px;
+  height: 4px;
+  background-color: #222222;
+}
+
+.sprite-frame-3 .character-legs:after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  right: 0px;
+  width: 3px;
+  height: 4px;
+  background-color: #222222;
+  transform: translateX(1px);
+}
+
+/* Hand above eyes animation - based on your pose in the photo */
+.character-arm-up {
+  position: absolute;
+  top: 5px;
+  right: -3px;
+  width: 5px;
+  height: 2px;
+  background-color: #EEEEEE;
+}
+
+/* Small breathing animation for idle state */
+@keyframes breathe {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(1px);
+  }
+}
+
+.character-body {
+  animation: breathe 2s ease-in-out infinite;
+}
+
+/* Walking animation for pixel character environment */
+.pixel-character {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(25, 9, 32, 0.2);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Synthwave ground lines */
+.pixel-character:before {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right,
+      transparent, rgba(237, 46, 165, 0.8), transparent);
+}
+
+.pixel-character:after {
+  content: '';
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right,
+      transparent, rgba(97, 114, 197, 0.5), transparent);
 }
