@@ -54,9 +54,9 @@ export default function Navbar() {
 
   // Navigation links for both desktop and mobile
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Tasks", path: "/tasks" },
-    { name: "About", path: "/about" },
+    { name: "Home", path: "/", icon: "🏠" },
+    { name: "Tasks", path: "/tasks", icon: "✓" },
+    { name: "About", path: "/about", icon: "ℹ️" },
   ];
 
   return (
@@ -71,25 +71,25 @@ export default function Navbar() {
         <div className="container mx-auto flex justify-between items-center px-4">
           {/* Logo area with hamburger menu on mobile */}
           <div className="flex items-center gap-4">
-            {/* Mobile Menu Button */}
+            {/* Hamburger Menu Button with white color for visibility */}
             <button
               className="md:hidden text-white focus:outline-none transition-transform duration-300 hover:scale-110"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              <div className="w-6 flex flex-col gap-1.5">
+              <div className="w-8 flex flex-col gap-1.5">
                 <span
-                  className={`block h-0.5 w-full bg-gradient-to-r from-pink to-blue origin-center transition-all duration-300 ${
+                  className={`block h-0.5 w-full bg-white origin-center transition-all duration-300 ${
                     isMobileMenuOpen ? "transform rotate-45 translate-y-2" : ""
                   }`}
                 ></span>
                 <span
-                  className={`block h-0.5 w-full bg-gradient-to-r from-yellow to-orange transition-opacity duration-300 ${
+                  className={`block h-0.5 w-full bg-white transition-opacity duration-300 ${
                     isMobileMenuOpen ? "opacity-0" : "opacity-100"
                   }`}
                 ></span>
                 <span
-                  className={`block h-0.5 w-full bg-gradient-to-r from-blue to-pink origin-center transition-all duration-300 ${
+                  className={`block h-0.5 w-full bg-white origin-center transition-all duration-300 ${
                     isMobileMenuOpen
                       ? "transform -rotate-45 -translate-y-2"
                       : ""
@@ -151,18 +151,18 @@ export default function Navbar() {
           </div>
 
           {/* Empty div for mobile spacing */}
-          <div className="md:hidden w-8"></div>
+          <div className="md:hidden w-6"></div>
         </div>
       </header>
 
-      {/* Mobile Menu - with animations */}
+      {/* Mobile Menu with transparent background */}
       {isMobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black z-[100] animate-fadeIn"
+          className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] animate-fadeIn"
           style={{ animation: "fadeIn 0.3s ease-out forwards" }}
         >
-          <div className="flex flex-col h-full p-6">
-            {/* Close button */}
+          <div className="flex flex-col h-full p-6 relative overflow-hidden">
+            {/* Header with logo and close button */}
             <div
               className="flex justify-between items-center mb-8 animate-slideInDown"
               style={{ animation: "slideInDown 0.4s ease-out forwards" }}
@@ -175,8 +175,8 @@ export default function Navbar() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
+                  width="28"
+                  height="28"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -190,7 +190,8 @@ export default function Navbar() {
               </button>
             </div>
 
-            <ul className="flex flex-col gap-4 mt-4">
+            {/* Navigation links with icons - ALL WITH SAME STYLING */}
+            <ul className="flex flex-col gap-4 mt-6">
               {navLinks.map((link, index) => (
                 <li
                   key={link.path}
@@ -209,21 +210,24 @@ export default function Navbar() {
                   <Link
                     href={link.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block px-6 py-4 rounded-lg text-xl font-medium transition-all duration-300 ${
+                    className={`flex items-center justify-center px-6 py-4 rounded-xl text-xl font-medium transition-all duration-300 ${
                       pathname === link.path
-                        ? "bg-pink text-white scale-105 shadow-lg shadow-pink/20"
-                        : "bg-[#3D1B3B] text-white hover:bg-pink/60 hover:scale-105"
+                        ? "bg-pink text-white shadow-lg shadow-pink/20"
+                        : "bg-transparent text-white hover:bg-[#3D1B3B] border border-[#3D1B3B]/50"
                     }`}
                   >
+                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
+                      {link.icon}
+                    </span>
                     {link.name}
                   </Link>
                 </li>
               ))}
             </ul>
 
-            {/* Auth buttons for mobile */}
+            {/* Auth buttons - BOTH WITH SAME STYLING PATTERN */}
             <div
-              className={`flex flex-col gap-3 mt-8 ${
+              className={`flex flex-col gap-4 mt-10 ${
                 isMenuMounted ? "animate-slideInRight opacity-100" : "opacity-0"
               }`}
               style={{
@@ -236,20 +240,26 @@ export default function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="bg-[#3D1B3B] text-white px-6 py-4 rounded-lg text-xl font-medium text-center hover:bg-pink/30 transition-all duration-300"
+                className="bg-transparent text-white px-6 py-4 rounded-xl text-xl font-medium hover:bg-[#3D1B3B] transition-all duration-300 border border-[#3D1B3B]/50 flex items-center justify-center"
               >
+                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
+                  🔑
+                </span>
                 Login
               </Link>
               <Link
                 href="/register"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="bg-gradient-to-r from-pink to-blue text-white px-6 py-4 rounded-lg text-xl font-medium text-center hover:shadow-lg hover:shadow-pink/20 transition-all duration-300"
+                className="bg-transparent text-white px-6 py-4 rounded-xl text-xl font-medium hover:bg-[#3D1B3B] transition-all duration-300 border border-[#3D1B3B]/50 flex items-center justify-center"
               >
+                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
+                  ✨
+                </span>
                 Register
               </Link>
             </div>
 
-            {/* Footer */}
+            {/* Footer - TRANSPARENT BACKGROUND */}
             <div
               className={`mt-auto pt-8 ${
                 isMenuMounted ? "animate-slideInUp opacity-100" : "opacity-0"
@@ -261,11 +271,11 @@ export default function Navbar() {
                 animationDelay: "0.5s",
               }}
             >
-              <div className="p-4 bg-[#3D1B3B] rounded-lg">
-                <p className="text-white text-sm">
+              <div className="p-6 bg-transparent rounded-xl border border-[#3D1B3B]/50 text-center">
+                <p className="text-white text-base font-medium">
                   Spektra © {new Date().getFullYear()}
                 </p>
-                <p className="text-white/70 text-sm">
+                <p className="text-white/70 text-sm mt-1">
                   Synthwave-inspired task app
                 </p>
               </div>
@@ -274,7 +284,7 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Add animation keyframes */}
+      {/* Animation keyframes */}
       <style jsx>{`
         @keyframes fadeIn {
           from {
