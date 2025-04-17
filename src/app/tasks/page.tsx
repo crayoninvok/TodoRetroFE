@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { withAuth } from "@/hoc/withAuth";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
 import { Task } from "@/types/Task";
 
-export default function TasksPage() {
+function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterMode, setFilterMode] = useState<"all" | "active" | "completed">(
@@ -222,3 +223,6 @@ export default function TasksPage() {
     </main>
   );
 }
+
+// Export the component wrapped with authentication protection
+export default withAuth(TasksPage);

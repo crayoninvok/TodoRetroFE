@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter, Orbitron } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { AuthProvider } from "@/context/AuthContext";
 
 // Define main fonts
 const inter = Inter({
@@ -56,12 +57,14 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="synthwave-bg">
-          <div className="scanline"></div>
-        </div>
-        <Navbar />
-        <div className="pt-24">{children}</div>
-        <Footer />
+        <AuthProvider>
+          <div className="synthwave-bg">
+            <div className="scanline"></div>
+          </div>
+          <Navbar />
+          <div className="pt-24">{children}</div>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

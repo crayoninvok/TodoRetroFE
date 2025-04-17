@@ -3,11 +3,17 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { logout } from "@/services/auth.service";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user, setUser } = useAuth();
+  const router = useRouter();
 
   // Animation state for menu items
   const [isMenuMounted, setIsMenuMounted] = useState(false);
@@ -37,7 +43,30 @@ export default function Navbar() {
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setIsProfileMenuOpen(false);
   }, [pathname]);
+
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const profileMenu = document.getElementById("profile-menu");
+      const profileButton = document.getElementById("profile-button");
+
+      if (
+        profileMenu &&
+        profileButton &&
+        !profileMenu.contains(event.target as Node) &&
+        !profileButton.contains(event.target as Node)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Disable body scroll when mobile menu is open
   useEffect(() => {
@@ -52,12 +81,50 @@ export default function Navbar() {
     };
   }, [isMobileMenuOpen]);
 
+  // Handle logout
+ const handleLogout = async () => {
+   try {
+     await logout(); // Wait for the logout API call to complete
+     setUser(null); // Update auth context
+
+     // Close menus
+     setIsProfileMenuOpen(false);
+     setIsMobileMenuOpen(false);
+
+     // Make sure router exists before trying to navigate
+     if (router) {
+       // Ensure this runs after state updates
+       setTimeout(() => {
+         router.push("/");
+       }, 0);
+     }
+   } catch (error) {
+     console.error("Logout error:", error);
+   }
+ };
+
   // Navigation links for both desktop and mobile
   const navLinks = [
     { name: "Home", path: "/", icon: "🏠" },
     { name: "Tasks", path: "/tasks", icon: "✓" },
     { name: "About", path: "/about", icon: "ℹ️" },
   ];
+
+  // Get first name for display
+  const getFirstName = () => {
+    if (!user || !user.name) return "User";
+    return user.name.split(" ")[0];
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user || !user.name) return "U";
+    const nameParts = user.name.split(" ");
+    if (nameParts.length > 1) {
+      return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+    }
+    return nameParts[0][0].toUpperCase();
+  };
 
   return (
     <>
@@ -134,24 +201,103 @@ export default function Navbar() {
             </ul>
           </nav>
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons or User Profile */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-white hover:text-pink transition-colors duration-300"
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-gradient-to-r from-pink to-blue text-white px-4 py-2 rounded-md hover:shadow-lg hover:shadow-pink/20 transition-all duration-300 hover:-translate-y-1"
-            >
-              Register
-            </Link>
+            {user ? (
+              <div className="relative">
+                <button
+                  id="profile-button"
+                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                  className="flex items-center gap-2 bg-gradient-to-r from-pink/20 to-blue/20 hover:from-pink/30 hover:to-blue/30 text-white px-3 py-1.5 rounded-full transition-all duration-300"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink to-blue flex items-center justify-center text-white font-semibold">
+                    {getUserInitials()}
+                  </div>
+                  <span>{getFirstName()}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={`transition-transform duration-300 ${
+                      isProfileMenuOpen ? "rotate-180" : ""
+                    }`}
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                {/* Profile dropdown menu */}
+                {isProfileMenuOpen && (
+                  <div
+                    id="profile-menu"
+                    className="absolute right-0 mt-2 w-48 bg-dark-purple/95 backdrop-blur-md border border-white/10 rounded-md shadow-lg shadow-pink/10 overflow-hidden z-50 animate-fadeIn"
+                  >
+                    <div className="px-4 py-3 border-b border-white/10">
+                      <p className="text-sm text-white font-semibold truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-white/70 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                    <div className="py-1">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        href="/settings"
+                        className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
+                      >
+                        Settings
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-pink hover:bg-white/10 transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-white hover:text-pink transition-colors duration-300"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="bg-gradient-to-r from-pink to-blue text-white px-4 py-2 rounded-md hover:shadow-lg hover:shadow-pink/20 transition-all duration-300 hover:-translate-y-1"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Empty div for mobile spacing */}
-          <div className="md:hidden w-6"></div>
+          <div className="md:hidden w-8">
+            {user && (
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="w-8 h-8 rounded-full bg-gradient-to-r from-pink to-blue flex items-center justify-center text-white font-semibold"
+              >
+                {getUserInitials()}
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -190,6 +336,35 @@ export default function Navbar() {
               </button>
             </div>
 
+            {/* User profile info when logged in */}
+            {user && (
+              <div
+                className={`px-6 py-4 rounded-xl mb-6 border border-[#3D1B3B]/50 ${
+                  isMenuMounted
+                    ? "animate-slideInRight opacity-100"
+                    : "opacity-0"
+                }`}
+                style={{
+                  animation: isMenuMounted
+                    ? "slideInRight 0.4s ease-out forwards"
+                    : "none",
+                  animationDelay: "0.1s",
+                }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-r from-pink to-blue flex items-center justify-center text-white text-xl font-bold">
+                    {getUserInitials()}
+                  </div>
+                  <div>
+                    <p className="text-white text-lg font-semibold">
+                      {user.name}
+                    </p>
+                    <p className="text-white/70 text-sm">{user.email}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Navigation links with icons - ALL WITH SAME STYLING */}
             <ul className="flex flex-col gap-4 mt-6">
               {navLinks.map((link, index) => (
@@ -204,7 +379,7 @@ export default function Navbar() {
                     animation: isMenuMounted
                       ? "slideInRight 0.4s ease-out forwards"
                       : "none",
-                    animationDelay: `${index * 0.1}s`,
+                    animationDelay: `${(index + (user ? 1 : 0)) * 0.1}s`,
                   }}
                 >
                   <Link
@@ -225,38 +400,72 @@ export default function Navbar() {
               ))}
             </ul>
 
-            {/* Auth buttons - BOTH WITH SAME STYLING PATTERN */}
-            <div
-              className={`flex flex-col gap-4 mt-10 ${
-                isMenuMounted ? "animate-slideInRight opacity-100" : "opacity-0"
-              }`}
-              style={{
-                animation: isMenuMounted
-                  ? "slideInRight 0.4s ease-out forwards"
-                  : "none",
-                animationDelay: "0.4s",
-              }}
-            >
-              <Link
-                href="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="bg-transparent text-white px-6 py-4 rounded-xl text-xl font-medium hover:bg-[#3D1B3B] transition-all duration-300 border border-[#3D1B3B]/50 flex items-center justify-center"
-              >
-                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
-                  🔑
-                </span>
-                Login
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="bg-transparent text-white px-6 py-4 rounded-xl text-xl font-medium hover:bg-[#3D1B3B] transition-all duration-300 border border-[#3D1B3B]/50 flex items-center justify-center"
-              >
-                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
-                  ✨
-                </span>
-                Register
-              </Link>
+            {/* Auth buttons or User profile/logout */}
+            <div className="flex flex-col gap-4 mt-10">
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className={`bg-transparent text-pink px-6 py-4 rounded-xl text-xl font-medium hover:bg-[#3D1B3B] transition-all duration-300 border border-pink/30 flex items-center justify-center ${
+                    isMenuMounted
+                      ? "animate-slideInRight opacity-100"
+                      : "opacity-0"
+                  }`}
+                  style={{
+                    animation: isMenuMounted
+                      ? "slideInRight 0.4s ease-out forwards"
+                      : "none",
+                    animationDelay: `${(navLinks.length + 1) * 0.1}s`,
+                  }}
+                >
+                  <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
+                    🚪
+                  </span>
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`bg-transparent text-white px-6 py-4 rounded-xl text-xl font-medium hover:bg-[#3D1B3B] transition-all duration-300 border border-[#3D1B3B]/50 flex items-center justify-center ${
+                      isMenuMounted
+                        ? "animate-slideInRight opacity-100"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animation: isMenuMounted
+                        ? "slideInRight 0.4s ease-out forwards"
+                        : "none",
+                      animationDelay: `${navLinks.length * 0.1 + 0.1}s`,
+                    }}
+                  >
+                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
+                      🔑
+                    </span>
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`bg-transparent text-white px-6 py-4 rounded-xl text-xl font-medium hover:bg-[#3D1B3B] transition-all duration-300 border border-[#3D1B3B]/50 flex items-center justify-center ${
+                      isMenuMounted
+                        ? "animate-slideInRight opacity-100"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animation: isMenuMounted
+                        ? "slideInRight 0.4s ease-out forwards"
+                        : "none",
+                      animationDelay: `${navLinks.length * 0.1 + 0.2}s`,
+                    }}
+                  >
+                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-black/30 mr-3">
+                      ✨
+                    </span>
+                    Register
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Footer - TRANSPARENT BACKGROUND */}
