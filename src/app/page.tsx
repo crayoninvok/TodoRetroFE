@@ -65,8 +65,8 @@ export default function Home() {
     transition: { type: "spring", stiffness: 400, damping: 10 },
   };
 
-  // Pixel letters for "SPEKTRA" arcade logo
-  const letters = "SPEKTRA";
+  // Pixel letters for "FRAUD" arcade logo
+  const letters = "FRAUD";
 
   return (
     <main className="pt-24 pb-12 relative overflow-hidden">
@@ -87,7 +87,7 @@ export default function Home() {
             transition={{ duration: 1.5 }}
             className="pixel-text text-4xl md:text-6xl text-yellow font-bold"
           >
-            SPEKTRA
+            FRAUD
           </motion.div>
         </motion.div>
       )}

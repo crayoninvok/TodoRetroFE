@@ -167,7 +167,7 @@ export default function Navbar() {
 
             <Link href="/" className="flex items-center group">
               <span className="text-3xl font-bold gradient-text relative">
-                Spektra
+                Fraud
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow via-orange to-pink group-hover:w-full transition-all duration-300"></span>
               </span>
             </Link>
@@ -278,7 +278,7 @@ export default function Navbar() {
                   Login
                 </Link>
                 <Link
-                  href="/register"
+                  href="/signup"
                   className="bg-gradient-to-r from-pink to-blue text-white px-4 py-2 rounded-md hover:shadow-lg hover:shadow-pink/20 transition-all duration-300 hover:-translate-y-1"
                 >
                   Register
@@ -313,7 +313,7 @@ export default function Navbar() {
               className="flex justify-between items-center mb-8 animate-slideInDown"
               style={{ animation: "slideInDown 0.4s ease-out forwards" }}
             >
-              <span className="text-3xl font-bold gradient-text">Spektra</span>
+              <span className="text-3xl font-bold gradient-text">Fraud</span>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-white p-2 hover:text-pink transition-colors duration-300"
@@ -482,7 +482,7 @@ export default function Navbar() {
             >
               <div className="p-6 bg-transparent rounded-xl border border-[#3D1B3B]/50 text-center">
                 <p className="text-white text-base font-medium">
-                  Spektra © {new Date().getFullYear()}
+                  Fraud © {new Date().getFullYear()}
                 </p>
                 <p className="text-white/70 text-sm mt-1">
                   Synthwave-inspired task app

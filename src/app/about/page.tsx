@@ -112,7 +112,7 @@ export default function AboutPage() {
             />
 
             <h1 className="text-5xl font-bold pixel-text text-yellow mb-4">
-              ABOUT SPEKTRA
+              ABOUT FRAUD
             </h1>
 
             <div className="text-xl retro-text text-light-gray relative">
@@ -200,7 +200,7 @@ export default function AboutPage() {
                 </div>
 
                 <p>
-                  Hello! I&apos;m the developer behind Spektra, blending my
+                  Hello! I&apos;m the developer behind Fraud, blending my
                   passion for both productivity tools and retro gaming
                   aesthetics. With a background in web development and a love
                   for the vibrant synthwave culture, I created this project to
@@ -244,9 +244,9 @@ export default function AboutPage() {
 
             <div className="space-y-4 retro-text">
               <p className="text-light-gray">
-                Spektra represents a fusion of productivity and nostalgia,
+                Fraud represents a fusion of productivity and nostalgia,
                 designed for those who appreciate both efficiency and
-                aesthetics. The name &quot;Spektra&quot; embodies the vibrant
+                aesthetics. The name &quot;Fraud&quot; embodies the vibrant
                 spectrum of colors and energy that defines the retro-futuristic
                 synthwave universe.
               </p>
@@ -296,7 +296,7 @@ export default function AboutPage() {
             </div>
 
             <p className="text-light-gray retro-text">
-              Built with cutting-edge web technologies, Spektra combines modern
+              Built with cutting-edge web technologies, Fraud combines modern
               development practices with retro aesthetics. The application
               leverages the power of Next.js 14 for optimal performance and
               TypeScript for type safety, while Framer Motion and AOS bring the

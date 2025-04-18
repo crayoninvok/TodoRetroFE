@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [status, setStatus] = useState<
     "loading" | "success" | "already-verified" | "error"
   >("loading");
@@ -19,7 +18,9 @@ export default function VerifyEmailPage() {
       if (verificationAttempted.current) return;
       verificationAttempted.current = true;
 
-      const token = searchParams.get("token");
+      // Use window.location to get search params on the client side
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
       console.log("Token from URL:", token);
 
       if (!token) {
@@ -84,7 +85,7 @@ export default function VerifyEmailPage() {
     };
 
     verifyEmail();
-  }, [router, searchParams]);
+  }, [router]);
 
   return (
     <div className="container max-w-md mx-auto px-4 py-12 animate-fade-in">

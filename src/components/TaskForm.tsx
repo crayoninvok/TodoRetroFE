@@ -1,117 +1,128 @@
 "use client";
-
-import { useState } from "react";
+import { useState, FormEvent } from "react";
+import { Priority } from "@/types/todo.types";
 
 interface TaskFormProps {
-  onAddTask: (title: string) => void;
+  onAddTask: (
+    title: string,
+    description?: string,
+    dueDate?: string,
+    priority?: Priority
+  ) => void;
+  isLoading?: boolean;
 }
 
-export default function TaskForm({ onAddTask }: TaskFormProps) {
-  const [taskTitle, setTaskTitle] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function TaskForm({
+  onAddTask,
+  isLoading = false,
+}: TaskFormProps) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState<Priority>("MEDIUM");
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (taskTitle.trim()) {
-      setIsSubmitting(true);
-
-      // Simulate a short delay for animation
-      setTimeout(() => {
-        onAddTask(taskTitle);
-        setTaskTitle("");
-        setIsSubmitting(false);
-      }, 300);
+    if (title.trim()) {
+      onAddTask(
+        title.trim(),
+        description.trim() || undefined,
+        dueDate || undefined,
+        priority
+      );
+      setTitle("");
+      setDescription("");
+      setDueDate("");
+      setPriority("MEDIUM");
+      setIsExpanded(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8 animate-fade-in">
-      <div className="flex gap-2">
-        <div className="relative flex-grow">
+    <form onSubmit={handleSubmit} className="mb-6">
+      <div className="flex flex-col gap-4">
+        <div className="relative">
           <input
             type="text"
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
-            placeholder="Add a new task..."
-            className="input pr-10"
-            disabled={isSubmitting}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="What needs to be done?"
+            className="input pr-24"
+            disabled={isLoading}
+            required
           />
-          {taskTitle.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setTaskTitle("")}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-light-gray hover:text-white transition-colors duration-200"
-              aria-label="Clear input"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-light-gray hover:text-white transition-colors"
+          >
+            {isExpanded ? "Less ↑" : "More ↓"}
+          </button>
         </div>
-        <button
-          type="submit"
-          className={`button relative overflow-hidden ${
-            isSubmitting ? "opacity-70" : ""
-          }`}
-          disabled={isSubmitting || !taskTitle.trim()}
-        >
-          {isSubmitting ? (
-            <span className="flex items-center">
-              <svg
-                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Adding...
-            </span>
-          ) : (
-            <span className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-1"
-              >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Add Task
-            </span>
-          )}
-        </button>
+
+        {isExpanded && (
+          <div className="animate-slide-up">
+            <div className="mb-4">
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description (optional)"
+                className="input min-h-24"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm text-light-gray mb-1">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="input"
+                  disabled={isLoading}
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-light-gray mb-1">
+                  Priority
+                </label>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value as Priority)}
+                  className="input"
+                  disabled={isLoading}
+                >
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="button px-6 py-3"
+            disabled={isLoading || !title.trim()}
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <span className="inline-block w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
+                Adding...
+              </span>
+            ) : (
+              "Add Task"
+            )}
+          </button>
+        </div>
       </div>
     </form>
   );

@@ -1,97 +1,67 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 import { withAuth } from "@/hoc/withAuth";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
-import { Task } from "@/types/Task";
+import { useTodos } from "@/hooks/useTodos";
+import { CreateTodoRequest, Priority } from "@/types/todo.types";
 
 function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { todos, isLoading, error, addTodo, toggleComplete, removeTodo } =
+    useTodos();
+
   const [filterMode, setFilterMode] = useState<"all" | "active" | "completed">(
     "all"
   );
 
-  // Load tasks from localStorage on component mount
-  useEffect(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    if (savedTasks) {
-      try {
-        // Parse the JSON string and convert string dates back to Date objects
-        const parsedTasks = JSON.parse(savedTasks).map(
-          (task: {
-            id: string;
-            title: string;
-            completed: boolean;
-            createdAt: string;
-          }) => ({
-            ...task,
-            createdAt: new Date(task.createdAt),
-          })
-        );
-        setTasks(parsedTasks);
-      } catch (error) {
-        console.error("Failed to parse tasks from localStorage:", error);
-      }
+  // Handle adding a new task
+  const handleAddTask = async (
+    title: string,
+    description?: string,
+    dueDate?: string,
+    priority?: Priority
+  ) => {
+    try {
+      const todoData: CreateTodoRequest = {
+        title,
+        description,
+        dueDate,
+        priority: priority || "MEDIUM",
+      };
+      await addTodo(todoData);
+    } catch (error) {
+      console.error("Failed to add task:", error);
     }
-
-    // Simulate loading for aesthetic purposes
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-  }, []);
-
-  // Save tasks to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
-
-  const addTask = (title: string) => {
-    const newTask: Task = {
-      id: uuidv4(),
-      title,
-      completed: false,
-      createdAt: new Date(),
-    };
-
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-  };
-
-  const toggleTaskComplete = (id: string) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  const deleteTask = (id: string) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-  };
-
-  const clearCompletedTasks = () => {
-    setTasks((prevTasks) => prevTasks.filter((task) => !task.completed));
   };
 
   // Filter tasks based on selected mode
-  const filteredTasks = tasks.filter((task) => {
+  const filteredTodos = todos.filter((todo) => {
     if (filterMode === "all") return true;
-    if (filterMode === "active") return !task.completed;
-    if (filterMode === "completed") return task.completed;
+    if (filterMode === "active") return !todo.completed;
+    if (filterMode === "completed") return todo.completed;
     return true;
   });
 
   // Task metrics
-  const completedCount = tasks.filter((task) => task.completed).length;
-  const totalCount = tasks.length;
+  const completedCount = todos.filter((todo) => todo.completed).length;
+  const totalCount = todos.length;
   const pendingCount = totalCount - completedCount;
+
+  // Clear completed tasks
+  const clearCompletedTasks = async () => {
+    const completedTodos = todos.filter((todo) => todo.completed);
+    for (const todo of completedTodos) {
+      try {
+        await removeTodo(todo.id);
+      } catch (err) {
+        console.error(`Failed to remove completed todo ${todo.id}:`, err);
+      }
+    }
+  };
 
   return (
     <main className="pt-24 pb-12">
-      {" "}
-      {/* Added proper top padding to account for fixed navbar */}
       <div className="container">
         <div className="gradient-border animate-fade-in max-w-3xl mx-auto">
           <div className="card">
@@ -99,7 +69,31 @@ function TasksPage() {
               My Tasks
             </h1>
 
-            {isLoading ? (
+            {/* Error message */}
+            {error && (
+              <div className="mb-4 p-3 bg-pink/20 text-white rounded animate-slide-up">
+                <p className="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  {error}
+                </p>
+              </div>
+            )}
+
+            {isLoading && todos.length === 0 ? (
               // Loading state
               <div className="flex justify-center items-center py-16">
                 <div className="w-10 h-10 border-4 border-blue border-t-pink rounded-full animate-spin"></div>
@@ -173,7 +167,7 @@ function TasksPage() {
                   className="animate-slide-up"
                   style={{ animationDelay: "300ms" }}
                 >
-                  <TaskForm onAddTask={addTask} />
+                  <TaskForm onAddTask={handleAddTask} isLoading={isLoading} />
                 </div>
 
                 <div
@@ -181,9 +175,10 @@ function TasksPage() {
                   style={{ animationDelay: "400ms" }}
                 >
                   <TaskList
-                    tasks={filteredTasks}
-                    onToggleComplete={toggleTaskComplete}
-                    onDelete={deleteTask}
+                    tasks={filteredTodos}
+                    onToggleComplete={toggleComplete}
+                    onDelete={removeTodo}
+                    isLoading={isLoading}
                   />
                 </div>
 
@@ -196,6 +191,7 @@ function TasksPage() {
                     <button
                       onClick={clearCompletedTasks}
                       className="text-sm text-light-gray hover:text-pink transition-colors flex items-center gap-1"
+                      disabled={isLoading}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

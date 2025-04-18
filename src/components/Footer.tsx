@@ -83,7 +83,7 @@ export default function Footer() {
           {/* Logo and description */}
           <div className="arcade-screen p-6 animate-fade-in">
             <h3 className="text-2xl font-bold pixel-text mb-4 text-yellow">
-              SPEKTRA
+              FRAUD
               <div className="h-px mt-2 w-full bg-gradient-to-r from-yellow to-pink"></div>
             </h3>
             <p className="text-light-gray retro-text">
@@ -176,7 +176,7 @@ export default function Footer() {
             <div className="flex items-center text-light-gray text-sm">
               <div className="arcade-display bg-black bg-opacity-30 px-3 py-1 border border-white border-opacity-10 rounded">
                 <span className="animate-blink inline-block mr-1">▹</span>©{" "}
-                {currentYear} SPEKTRA ARCADE
+                {currentYear} FRAUD TODO ARCADE
               </div>
             </div>
 

@@ -35,7 +35,7 @@ const vt323 = {
 };
 
 export const metadata: Metadata = {
-  title: "Spektra Tasks - Synthwave Todo App",
+  title: "FRAUD TASKS - Synthwave Todo App",
   description: "A stylish todo list application with synthwave aesthetics",
   icons: {
     icon: "/favicon.ico",

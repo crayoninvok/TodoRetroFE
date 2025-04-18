@@ -95,7 +95,7 @@ export default function RegisterForm({
         <div className="card">
           <div className="text-center mb-8 animate-slide-up">
             <h1 className="text-4xl font-bold gradient-text mb-2">Register</h1>
-            <p className="text-light-gray">Create your Spektra account</p>
+            <p className="text-light-gray">Create your Fraud account</p>
           </div>
 
           {displayError && (
